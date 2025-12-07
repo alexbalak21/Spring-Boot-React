@@ -43,7 +43,7 @@ public class AuthController {
             );
 
             String token = jwtService.generateToken((UserDetails) authentication.getPrincipal());
-            return ResponseEntity.ok(Map.of("token", token));
+            return ResponseEntity.ok(Map.of("access_token", token));
 
         } catch (org.springframework.security.core.AuthenticationException e) {
             return ResponseEntity.status(401).body(Map.of("error", "Invalid credentials"));

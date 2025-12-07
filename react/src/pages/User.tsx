@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import styles from "./Login.module.css"; // reuse same styling
 import { useCsrf } from "../hooks/useCsrf"; // adjust path
+import { useAuthorizedApi } from "../hooks/useAuthorizedApi";
 
-const USER_URL = "/api/user";
+const USER_URL = "/user"; // baseURL is already set in useAuthorizedApi
 
 interface UserInfo {
   id: number;
@@ -16,6 +16,7 @@ interface UserInfo {
 
 export default function User() {
   const csrfReady = useCsrf();
+  const api = useAuthorizedApi(); // ✅ use the custom API client
   const [user, setUser] = useState<UserInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -25,7 +26,7 @@ export default function User() {
 
     const fetchUser = async () => {
       try {
-        const response = await axios.get(USER_URL, {
+        const response = await api.get(USER_URL, {
           headers: {
             "X-Requested-With": "XMLHttpRequest",
           },
@@ -44,7 +45,7 @@ export default function User() {
     };
 
     fetchUser();
-  }, [csrfReady]);
+  }, [csrfReady, api]);
 
   return (
     <div className={styles.container}>
@@ -68,10 +69,12 @@ export default function User() {
               <strong>Role:</strong> {user.role}
             </div>
             <div className={styles.formGroup}>
-              <strong>Created At:</strong> {new Date(user.createdAt).toLocaleString()}
+              <strong>Created At:</strong>{" "}
+              {new Date(user.createdAt).toLocaleString()}
             </div>
             <div className={styles.formGroup}>
-              <strong>Updated At:</strong> {new Date(user.updatedAt).toLocaleString()}
+              <strong>Updated At:</strong>{" "}
+              {new Date(user.updatedAt).toLocaleString()}
             </div>
           </div>
         )}

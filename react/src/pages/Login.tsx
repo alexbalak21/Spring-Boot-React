@@ -1,7 +1,8 @@
 import { useState } from "react";
 import axios from "axios";
 import styles from "./Login.module.css";
-import { useCsrf } from "../hooks/useCsrf"; // adjust path
+import { useCsrf } from "../hooks/useCsrf";
+import { useAuthToken } from "../hooks/useAuthToken";
 
 const LOGIN_URL = "/api/auth/login";
 
@@ -12,6 +13,7 @@ interface LoginFormData {
 
 export default function Login() {
   const csrfReady = useCsrf();
+  const { setAccessToken } = useAuthToken();
 
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
@@ -44,11 +46,17 @@ export default function Login() {
           "Content-Type": "application/json",
           "X-Requested-With": "XMLHttpRequest",
         },
-        withCredentials: true, // ensure cookies (JSESSIONID, CSRF) are kept
+        withCredentials: true,
       });
 
-      setLoginResult(response.data?.message || "Login successful");
-      console.log("Login successful:", response.data);
+      const access_token = response.data?.access_token;
+      if (access_token) {
+        setAccessToken(access_token);
+        setLoginResult("Login successful");
+        console.log("JWT saved via hook:", access_token);
+      } else {
+        setError("No access token returned from server");
+      }
     } catch (err: any) {
       const errorMessage =
         err.response?.data?.message ||
