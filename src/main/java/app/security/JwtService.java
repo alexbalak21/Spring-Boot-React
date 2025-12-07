@@ -1,11 +1,11 @@
 package app.security;
 
-import app.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
@@ -31,14 +31,17 @@ public class JwtService {
     private long expirationMs;
 
     /**
-     * Generates a JWT token for the given user
-     * @param user The user for whom to generate the token
+     * Generates a JWT token for the given user details
+     * @param userDetails The authenticated user
      * @return A signed JWT token
      */
-    public String generateToken(User user) {
+    public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("role", user.getRole().name());
-        return createToken(claims, user.getEmail());
+        // Add authorities/roles to claims
+        claims.put("role", userDetails.getAuthorities().stream()
+                .map(Object::toString)
+                .toList());
+        return createToken(claims, userDetails.getUsername());
     }
 
     private String createToken(Map<String, Object> claims, String subject) {

@@ -51,6 +51,7 @@ public class SecurityConfig {
         "/login",
         "/user",
         "/register",
+        "/api/auth/login",
         "/api/demo"
     };
 

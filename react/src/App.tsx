@@ -1,45 +1,36 @@
-import {useState} from "react"
-import axios from "axios"
-import "./App.css"
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import Home from "./pages/Home";
+import About from "./pages/About";
+import Login from "./pages/Login";
+import ApiDemo from "./pages/ApiDemo";
+import Register from "./pages/Register";
+import User from "./pages/User";
+import "./App.css";
 
 export default function App() {
-  const [message, setMessage] = useState("")
-  const [response, setResponse] = useState("")
-
-  async function getMessage() {
-    try {
-      const res = await axios.get("/api/message")
-      // if backend returns plain text, use res.data directly
-      setResponse(res.data)
-    } catch (error) {
-      console.error("Error fetching message:", error)
-    }
-  }
-
-  async function postMessage() {
-    try {
-      const res = await axios.post("/api/message", {message})
-      // if backend echoes the message as plain text, res.data will be that string
-      setResponse(res.data)
-    } catch (error) {
-      console.error("Error posting message:", error)
-    }
-  }
-
   return (
-    <div className="App">
-      <h1>React App</h1>
+    <Router>
+      <div className="app-container">
+        <nav>
+          <ul>
+            <li><Link to="/">Home</Link></li>
+            <li><Link to="/about">About</Link></li>
+            <li><Link to="/demo">API Demo</Link></li>
+            <li><Link to="/login">Login</Link></li>
+            <li><Link to="/register">Register</Link></li>
+            <li><Link to="/user">User</Link></li>
+          </ul>
+        </nav>
 
-      <p>{response}</p>
-
-      <div>
-        <input type="text" value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Enter a message" />
-        <button onClick={postMessage}>Send Message</button>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/demo" element={<ApiDemo />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/user" element={<User />} />
+        </Routes>
       </div>
-
-      <div>
-        <button onClick={getMessage}>Get the Message</button>
-      </div>
-    </div>
-  )
+    </Router>
+  );
 }
