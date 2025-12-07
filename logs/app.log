@@ -628,3 +628,62 @@ Caused by: java.lang.ClassNotFoundException: Could not load requested class: org
 		at java.base/java.lang.ClassLoader.loadClass(Unknown Source)
 		at org.hibernate.boot.registry.classloading.internal.AggregatedClassLoader.findClass(AggregatedClassLoader.java:202)
 		... 137 common frames omitted
+2025-12-07 21:20:14.810 INFO  app.Application [restartedMain] - Starting Application using Java 21.0.9 with PID 17892 (F:\DEV\Spring-Boot-react\target\classes started by ALEX in F:\DEV\Spring-Boot-react)
+2025-12-07 21:20:14.825 INFO  app.Application [restartedMain] - No active profile set, falling back to 1 default profile: "default"
+2025-12-07 21:20:15.092 INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor [restartedMain] - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-12-07 21:20:15.092 INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor [restartedMain] - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-12-07 21:20:17.431 INFO  o.s.d.r.c.RepositoryConfigurationDelegate [restartedMain] - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-12-07 21:20:17.694 INFO  o.s.d.r.c.RepositoryConfigurationDelegate [restartedMain] - Finished Spring Data repository scanning in 206 ms. Found 1 JPA repository interface.
+2025-12-07 21:20:19.878 INFO  o.s.boot.tomcat.TomcatWebServer [restartedMain] - Tomcat initialized with port 8100 (http)
+2025-12-07 21:20:19.927 INFO  o.a.catalina.core.StandardService [restartedMain] - Starting service [Tomcat]
+2025-12-07 21:20:19.927 INFO  o.a.catalina.core.StandardEngine [restartedMain] - Starting Servlet engine: [Apache Tomcat/11.0.14]
+2025-12-07 21:20:20.074 INFO  o.s.b.w.c.s.WebApplicationContextInitializer [restartedMain] - Root WebApplicationContext: initialization completed in 4982 ms
+2025-12-07 21:20:20.541 INFO  o.h.jpa.internal.util.LogHelper [restartedMain] - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-12-07 21:20:20.736 INFO  org.hibernate.Version [restartedMain] - HHH000412: Hibernate ORM core version 7.1.8.Final
+2025-12-07 21:20:22.172 INFO  o.s.o.j.p.SpringPersistenceUnitInfo [restartedMain] - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-12-07 21:20:22.277 INFO  com.zaxxer.hikari.HikariDataSource [restartedMain] - HikariPool-1 - Starting...
+2025-12-07 21:20:22.553 INFO  com.zaxxer.hikari.pool.HikariPool [restartedMain] - HikariPool-1 - Added connection org.mariadb.jdbc.Connection@640a5470
+2025-12-07 21:20:22.553 INFO  com.zaxxer.hikari.HikariDataSource [restartedMain] - HikariPool-1 - Start completed.
+2025-12-07 21:20:22.667 WARN  org.hibernate.orm.deprecation [restartedMain] - HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-12-07 21:20:22.730 INFO  o.hibernate.orm.connections.pooling [restartedMain] - HHH10001005: Database info:
+	Database JDBC URL [jdbc:mariadb://localhost/spring_boot_app?user=springboot&password=***]
+	Database driver: MariaDB Connector/J
+	Database dialect: MySQLDialect
+	Database version: 10.4.28
+	Default catalog/schema: spring_boot_app/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DatasourceConnectionProviderImpl
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-12-07 21:20:25.168 INFO  o.h.e.t.j.p.i.JtaPlatformInitiator [restartedMain] - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-12-07 21:20:25.232 DEBUG org.hibernate.SQL [restartedMain] - 
+    drop table if exists users
+2025-12-07 21:20:25.263 DEBUG org.hibernate.SQL [restartedMain] - 
+    create table users (
+        created_at datetime(6) not null,
+        id bigint not null auto_increment,
+        updated_at datetime(6),
+        email varchar(100) not null,
+        name varchar(100) not null,
+        password varchar(255) not null,
+        role enum ('ADMIN','AGENT','USER') not null,
+        primary key (id)
+    ) engine=InnoDB
+2025-12-07 21:20:25.292 DEBUG org.hibernate.SQL [restartedMain] - 
+    alter table users 
+       add constraint UK6dotkott2kjsp8vw4d0m25fb7 unique (email)
+2025-12-07 21:20:25.324 INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean [restartedMain] - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-12-07 21:20:25.554 INFO  o.s.d.j.r.q.QueryEnhancerFactories [restartedMain] - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-12-07 21:20:26.315 INFO  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer [restartedMain] - Global AuthenticationManager configured with UserDetailsService bean with name userDetailsServiceImpl
+2025-12-07 21:20:26.429 WARN  o.s.b.j.a.JpaBaseConfiguration$JpaWebConfiguration [restartedMain] - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-12-07 21:20:27.036 DEBUG o.s.s.web.DefaultSecurityFilterChain [restartedMain] - Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, CsrfFilter, LogoutFilter, JwtAuthenticationFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, SessionManagementFilter, ExceptionTranslationFilter, AuthorizationFilter
+2025-12-07 21:20:27.192 INFO  o.s.b.w.a.WelcomePageHandlerMapping [restartedMain] - Adding welcome page: class path resource [static/index.html]
+2025-12-07 21:20:27.360 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping [restartedMain] - 7 mappings in 'requestMappingHandlerMapping'
+2025-12-07 21:20:27.465 DEBUG o.s.w.s.h.SimpleUrlHandlerMapping [restartedMain] - Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2025-12-07 21:20:27.580 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerAdapter [restartedMain] - ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-12-07 21:20:27.745 DEBUG o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver [restartedMain] - ControllerAdvice beans: 0 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-12-07 21:20:28.119 INFO  o.s.b.d.a.OptionalLiveReloadServer [restartedMain] - LiveReload server is running on port 35729
+2025-12-07 21:20:28.659 INFO  o.s.boot.tomcat.TomcatWebServer [restartedMain] - Tomcat started on port 8100 (http) with context path '/'
+2025-12-07 21:20:28.740 INFO  app.Application [restartedMain] - Started Application in 15.656 seconds (process running for 17.112)
