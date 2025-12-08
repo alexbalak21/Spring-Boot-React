@@ -9,76 +9,73 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Wraps your User entity and exposes it as a Spring Security UserDetails.
+ * Custom implementation of Spring Security's UserDetails
+ * that includes the user's ID, email, and name.
  */
 public class CustomUserDetails implements UserDetails {
 
-    private final User user;
+    private final Long id;
+    private final String email;
+    private final String name;
+    private final String password;
+    private final Collection<? extends GrantedAuthority> authorities;
 
     public CustomUserDetails(User user) {
-        this.user = user;
+        this.id = user.getId();
+        this.email = user.getEmail();
+        this.name = user.getName();
+        this.password = user.getPassword();
+        this.authorities = List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
     }
 
-    // Expose extra fields for your controllers/DTOs
     public Long getId() {
-        return user.getId();
-    }
-
-    public String getName() {
-        return user.getName();
-    }
-
-    public String getRole() {
-        return user.getRole().name();
+        return id;
     }
 
     public String getEmail() {
-        return user.getEmail();
+        return email;
     }
 
-    public String getCreatedAt() {
-        return user.getCreatedAt().toString();
+    public String getName() {
+        return name;
     }
 
-    public String getUpdatedAt() {
-        return user.getUpdatedAt().toString();
-    }
-
-    // --- UserDetails contract ---
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Prefix with ROLE_ to match Spring conventions
-        return List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole()));
+        return authorities;
     }
 
     @Override
     public String getPassword() {
-        return user.getPassword();
+        return password;
     }
 
+    /**
+     * Spring Security uses getUsername() as the unique identifier.
+     * Here we return the email, but you could return name or id if desired.
+     */
     @Override
     public String getUsername() {
-        // Spring Security uses "username" as the login identifier
-        return user.getEmail();
+        return email; // or String.valueOf(id) if you want ID as principal
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return true; // customize if you track expiry
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true; // customize if you track locks
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true; // customize if you track credential expiry
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return true; // customize if you track active/inactive users
+        return true;
     }
 }

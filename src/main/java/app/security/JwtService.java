@@ -1,11 +1,11 @@
 package app.security;
 
+import app.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
@@ -22,26 +22,24 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    // Secret key used for signing the JWT (injected from application properties)
     @Value("${app.jwt.secret}")
     private String secret;
 
-    // Token expiration time in milliseconds (default: 24 hours)
-    @Value("${app.jwt.expiration:86400000}")
+    @Value("${app.jwt.expiration:86400000}") // default 24h
     private long expirationMs;
 
     /**
-     * Generates a JWT token for the given user details
-     * @param userDetails The authenticated user
+     * Generates a JWT token for the given user entity.
+     * @param user The authenticated user
      * @return A signed JWT token
      */
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
-        // Add authorities/roles to claims
-        claims.put("role", userDetails.getAuthorities().stream()
-                .map(Object::toString)
-                .toList());
-        return createToken(claims, userDetails.getUsername());
+        claims.put("role", user.getRole().name());
+        claims.put("email", user.getEmail());   // optional, for convenience
+        claims.put("name", user.getName());     // optional, for display
+
+        return createToken(claims, String.valueOf(user.getId())); // sub = user ID
     }
 
     private String createToken(Map<String, Object> claims, String subject) {
@@ -50,7 +48,7 @@ public class JwtService {
         return Jwts.builder()
                 .setClaims(claims)
                 .setId(id)
-                .setSubject(subject)
+                .setSubject(subject) // sub = user ID
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
@@ -58,15 +56,15 @@ public class JwtService {
     }
 
     /**
-     * Validates if the given token is valid for the specified username
+     * Validates if the given token is valid for the specified user ID.
      */
-    public Boolean validateToken(String token, String username) {
-        final String tokenUsername = extractUsername(token);
-        return (tokenUsername.equals(username) && !isTokenExpired(token));
+    public Boolean validateToken(String token, Long userId) {
+        final String tokenSub = extractSubject(token);
+        return (tokenSub.equals(String.valueOf(userId)) && !isTokenExpired(token));
     }
 
-    public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+    public String extractSubject(String token) {
+        return extractClaim(token, Claims::getSubject); // returns user ID as string
     }
 
     public Date extractExpiration(String token) {
