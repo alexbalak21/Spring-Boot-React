@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import ApiDemo from "./pages/ApiDemo";
 import Register from "./pages/Register";
 import User from "./pages/User";
+import CreatePost from "./pages/CreatePost";
 import "./App.css";
 
 export default function App() {
@@ -19,6 +20,7 @@ export default function App() {
             <li><Link to="/login">Login</Link></li>
             <li><Link to="/register">Register</Link></li>
             <li><Link to="/user">User</Link></li>
+            <li><Link to="/create-post">Create Post</Link></li>
           </ul>
         </nav>
 
@@ -29,6 +31,7 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/user" element={<User />} />
+          <Route path="/create-post" element={<CreatePost />} />
         </Routes>
       </div>
     </Router>
