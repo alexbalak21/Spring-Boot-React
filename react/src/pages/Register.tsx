@@ -11,8 +11,7 @@ interface RegisterFormData {
 }
 
 export default function Register() {
-  const csrfReady = useCsrf();
-
+  useCsrf();
   const [formData, setFormData] = useState<RegisterFormData>({
     name: "",
     email: "",
