@@ -39,27 +39,33 @@ export default function ApiDemo() {
   };
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-6">
-      <h1 className="text-2xl font-semibold mb-4">API Demo</h1>
-      <div className="flex gap-3 items-start mb-4">
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Type a message..."
-          className="flex-1 rounded-md border-gray-300 p-2"
-        />
-        <button
-          onClick={handlePost}
-          disabled={loading || !csrfReady}
-          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-60"
-        >
-          {loading ? "Sending..." : "Send Message"}
-        </button>
+    <div className="l-container u-py-4">
+      <h1 className="u-mb-4">API Demo</h1>
+      <div className="c-api-demo">
+        <div className="c-api-demo__form">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Type a message..."
+            className="c-api-demo__input"
+            disabled={loading || !csrfReady}
+          />
+          <button
+            onClick={handlePost}
+            disabled={loading || !csrfReady}
+            className="c-button c-button--primary"
+          >
+            {loading ? 'Sending...' : 'Send to API'}
+          </button>
+        </div>
+        
+        {responseText && (
+          <div className="c-api-demo__response">
+            <pre className="c-api-demo__pre">{responseText}</pre>
+          </div>
+        )}
       </div>
-      {responseText && (
-        <pre className="bg-gray-50 p-4 rounded-md font-mono text-sm whitespace-pre-wrap">{responseText}</pre>
-      )}
     </div>
   );
 }
