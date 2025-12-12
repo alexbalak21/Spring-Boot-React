@@ -65,7 +65,7 @@ export default function User() {
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold">User Profile</h2>
           <button
-            className="text-sm bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 disabled:opacity-60"
+            className={`inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${logoutLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
             onClick={() => { if (confirm("Log out now?")) logout(); }}
             disabled={logoutLoading}
           >
