@@ -31,8 +31,8 @@ export default function CreatePost() {
         body: body.trim(),
       });
 
-      // Redirect to the post details page or home page
-      navigate("/");
+      // Redirect to the posts page
+      navigate("/posts");
     } catch (err: any) {
       const errorMessage =
         err.response?.data?.message ||
