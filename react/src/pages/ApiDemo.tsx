@@ -1,6 +1,8 @@
 import { useState } from "react";
 import axios from "axios";
 import { useCsrf } from "../hooks/useCsrf";
+import Button from "../components/Button";
+import Input from "../components/Input";
 
 // Axios defaults for XSRF and cookies
 axios.defaults.withCredentials = true;
@@ -39,28 +41,26 @@ export default function ApiDemo() {
   };
 
   return (
-    <div className="app-container">
-      <h1>API Demo</h1>
-      <div className="api-demo-container">
-        <input
+    <div className="mx-auto max-w-3xl px-4 py-6">
+      <h1 className="text-2xl font-semibold mb-4">API Demo</h1>
+      <div className="flex gap-3 items-center mb-4">
+        <Input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Type a message..."
-          className="api-demo-input"
+          className="flex-1"
         />
-        <button
+        <Button
           onClick={handlePost}
           disabled={loading || !csrfReady}
-          className="api-demo-button"
+          loading={loading}
         >
           {loading ? "Sending..." : "Send Message"}
-        </button>
+        </Button>
       </div>
       {responseText && (
-        <div className="api-demo-response">
-          {responseText}
-        </div>
+        <pre className="bg-gray-50 p-4 rounded-md font-mono text-sm whitespace-pre-wrap">{responseText}</pre>
       )}
     </div>
   );

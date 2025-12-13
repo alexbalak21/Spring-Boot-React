@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthorizedApi } from "../../hooks/useAuthorizedApi";
-import "./css/Post.css";
+import Button from "../../components/Button";
+import Input from "../../components/Input";
 
 const POST_URL = "/posts"
 
@@ -44,52 +45,64 @@ export default function CreatePost() {
   };
 
   return (
-    <div className="login-container">
-      <div className="login-card">
-        <h2 className="login-title">Create New Post</h2>
+    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-3xl mx-auto">
+        <div className="bg-white py-8 px-6 shadow rounded-lg sm:px-10">
+          <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">Create New Post</h2>
 
-        {error && <div className="alert-error">{error}</div>}
+          {error && (
+            <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded">
+              <p>{error}</p>
+            </div>
+          )}
 
-        <form onSubmit={handleSubmit} className="login-form">
-          <div className="form-group">
-            <label htmlFor="title" className="form-label">
-              Title
-            </label>
-            <input
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <Input
+              label="Title"
               type="text"
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="form-input"
               disabled={isSubmitting}
               placeholder="Enter post title"
               maxLength={100}
+              required
             />
-          </div>
 
-          <div className="form-group">
-            <label htmlFor="body" className="form-label">
-              Content
-            </label>
-            <textarea
-              id="body"
-              value={body}
-              onChange={(e) => setBody(e.target.value)}
-              className="form-input"
-              disabled={isSubmitting}
-              placeholder="Write your post content here..."
-              rows={6}
-            />
-          </div>
+            <div>
+              <label htmlFor="body" className="block text-sm font-medium text-gray-700 mb-1">
+                Content
+              </label>
+              <textarea
+                id="body"
+                value={body}
+                onChange={(e) => setBody(e.target.value)}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border h-48"
+                disabled={isSubmitting}
+                placeholder="Write your post content here..."
+                required
+              />
+            </div>
 
-          <button
-            type="submit"
-            className={`login-button ${isSubmitting ? 'login-button-disabled' : ''}`}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? 'Publishing...' : 'Publish Post'}
-          </button>
-        </form>
+            <div className="flex justify-end space-x-3 pt-4">
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => navigate(-1)}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                loading={isSubmitting}
+                disabled={isSubmitting}
+              >
+                Create Post
+              </Button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

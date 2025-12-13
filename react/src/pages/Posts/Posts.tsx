@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthorizedApi } from "../../hooks/useAuthorizedApi";
-import "./css/Post.css";
+import Button from "../../components/Button";
 
 const MY_POSTS_URL = "/posts/my-posts";
 
@@ -72,58 +72,70 @@ export default function Posts() {
   };
 
   if (loading) {
-    return <div className="loading">Loading your posts...</div>;
+    return <div className="flex justify-center items-center h-64 text-gray-600">Loading your posts...</div>;
   }
 
   if (error) {
     return (
-      <div className="error-message">
-        <p>Error: {error}</p>
-        <button onClick={() => window.location.reload()}>Try Again</button>
+      <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+        <p className="mb-2">Error: {error}</p>
+        <Button onClick={() => window.location.reload()}>
+          Try Again
+        </Button>
       </div>
     );
   }
 
   return (
-    <div className="posts-container">
-      <div className="posts-header">
-        <h2>Your Posts</h2>
-        <button onClick={handleCreateNew} className="create-post-btn">
-          + Create New Post
-        </button>
+    <div className="container mx-auto px-4 py-8">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="text-2xl font-bold text-gray-800">Your Posts</h2>
+          <Button onClick={handleCreateNew}>
+            + Create New Post
+          </Button>
+        </div>
+        
+        {posts.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-gray-600 mb-6">You haven't created any posts yet.</p>
+            <Button onClick={handleCreateNew}>
+              Create Your First Post
+            </Button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {posts.map((post) => (
+              <article key={post.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div className="p-6">
+                  <h3 className="text-xl font-semibold text-gray-800 mb-3">{post.title}</h3>
+                  <div className="text-gray-600 mb-4">
+                    <p className="whitespace-pre-line">{post.body}</p>
+                  </div>
+                  <div className="text-sm text-gray-500 mb-4">
+                    <span className="block">
+                      Created: {formatDate(post.createdAt)}
+                    </span>
+                    {post.updatedAt !== post.createdAt && (
+                      <span className="block mt-1">
+                        Updated: {formatDate(post.updatedAt)}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex justify-end">
+                    <Button 
+                      variant="secondary"
+                      onClick={() => navigate(`/edit-post/${post.id}`)}
+                    >
+                      Edit
+                    </Button>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
       </div>
-      
-      {posts.length === 0 ? (
-        <div className="no-posts">
-          <p>You haven't created any posts yet.</p>
-          <button onClick={handleCreateNew} className="create-post-btn">
-            Create Your First Post
-          </button>
-        </div>
-      ) : (
-        <div className="posts-grid">
-          {posts.map((post) => (
-            <div key={post.id} className="post-card">
-              <h3>{post.title}</h3>
-              <p className="post-body">{post.body}</p>
-              <div className="post-meta">
-                <span>Created: {formatDate(post.createdAt)}</span>
-                {post.updatedAt !== post.createdAt && (
-                  <span> • Updated: {formatDate(post.updatedAt)}</span>
-                )}
-              </div>
-              <div className="post-actions">
-                <button 
-                  className="edit-btn"
-                  onClick={() => navigate(`/edit-post/${post.id}`)}
-                >
-                  Edit
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
     </div>
   );
 }

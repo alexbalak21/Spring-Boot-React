@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import { useCsrf } from "../hooks/useCsrf";
 import { useAuthorizedApi } from "../hooks/useAuthorizedApi";
 import { useLogout } from "../hooks/useLogout";
+import Button from "../components/Button";
 
 const USER_URL = "/user"; // baseURL is already set in useAuthorizedApi
 
@@ -60,45 +61,31 @@ export default function User() {
   }, [csrfReady, api]); // ✅ runs only once when csrfReady flips true
 
   return (
-    <div className="login-container">
-      <div className="login-card">
-        <h2 className="login-title">User Profile</h2>
+    <div className="min-h-[60vh] flex items-center justify-center py-12">
+      <div className="w-full max-w-lg bg-white rounded-lg shadow-md p-8">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold">User Profile</h2>
+          <Button
+            variant="danger"
+            onClick={() => { if (confirm("Log out now?")) logout(); }}
+            disabled={logoutLoading}
+            loading={logoutLoading}
+          >
+            {logoutLoading ? "Logging out..." : "Logout"}
+          </Button>
+        </div>
 
-        {loading && <p>Loading user info...</p>}
-        {error && <div className="alert-error">{error}</div>}
+        {loading && <p className="text-gray-600">Loading user info...</p>}
+        {error && <div className="mb-4 text-sm text-red-700 bg-red-100 p-3 rounded">{error}</div>}
+
         {user && (
-          <div className="login-form">
-            <div style={{ marginBottom: 12 }}>
-              <button
-                className="btn"
-                onClick={() => {
-                  if (confirm("Log out now?")) logout();
-                }}
-                disabled={logoutLoading}
-              >
-                {logoutLoading ? "Logging out..." : "Logout"}
-              </button>
-            </div>
-            <div className="form-group">
-              <strong>ID:</strong> {user.id}
-            </div>
-            <div className="form-group">
-              <strong>Name:</strong> {user.name}
-            </div>
-            <div className="form-group">
-              <strong>Email:</strong> {user.email}
-            </div>
-            <div className="form-group">
-              <strong>Role:</strong> {user.role}
-            </div>
-            <div className="form-group">
-              <strong>Created At:</strong>{" "}
-              {new Date(user.createdAt).toLocaleString()}
-            </div>
-            <div className="form-group">
-              <strong>Updated At:</strong>{" "}
-              {new Date(user.updatedAt).toLocaleString()}
-            </div>
+          <div className="space-y-3">
+            <div className="flex gap-4"><strong className="w-28 text-gray-700">ID:</strong> <span className="text-gray-900">{user.id}</span></div>
+            <div className="flex gap-4"><strong className="w-28 text-gray-700">Name:</strong> <span className="text-gray-900">{user.name}</span></div>
+            <div className="flex gap-4"><strong className="w-28 text-gray-700">Email:</strong> <span className="text-gray-900">{user.email}</span></div>
+            <div className="flex gap-4"><strong className="w-28 text-gray-700">Role:</strong> <span className="text-gray-900">{user.role}</span></div>
+            <div className="flex gap-4"><strong className="w-28 text-gray-700">Created:</strong> <span className="text-gray-900">{new Date(user.createdAt).toLocaleString()}</span></div>
+            <div className="flex gap-4"><strong className="w-28 text-gray-700">Updated:</strong> <span className="text-gray-900">{new Date(user.updatedAt).toLocaleString()}</span></div>
           </div>
         )}
       </div>
