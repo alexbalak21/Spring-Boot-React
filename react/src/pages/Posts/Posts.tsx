@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthorizedApi } from "../../hooks/useAuthorizedApi";
+import { useToast } from "../../components/ToastContainer";
 import Button from "../../components/Button";
 
 const MY_POSTS_URL = "/posts/my-posts";
@@ -20,6 +21,7 @@ export default function Posts() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const toast = useToast();
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -122,7 +124,7 @@ export default function Posts() {
                       </span>
                     )}
                   </div>
-                  <div className="flex justify-end">
+                  <div className="flex justify-end space-x-2">
                     <Button 
                       variant="secondary"
                       onClick={() => navigate(`/edit-post/${post.id}`)}

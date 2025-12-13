@@ -38,6 +38,28 @@ export default function UpdatePost() {
     fetchPost();
   }, [api, id]);
 
+  const handleDelete = async () => {
+    if (!id) return;
+
+    const confirmed = window.confirm("Are you sure you want to delete this post? This action cannot be undone.");
+    if (!confirmed) return;
+
+    setIsSubmitting(true);
+
+    try {
+      await api.delete(`${UPDATE_POST_URL}/${id}`);
+      toast.success("Post deleted successfully!");
+      navigate("/posts");
+    } catch (err: any) {
+      const errorMessage =
+        err.response?.data?.message ||
+        err.response?.data?.error ||
+        "Failed to delete post. Please try again.";
+      setError(errorMessage);
+      setIsSubmitting(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -126,22 +148,32 @@ export default function UpdatePost() {
               />
             </div>
 
-            <div className="flex justify-end space-x-3 pt-4">
+            <div className="flex justify-between pt-4">
               <Button
                 type="button"
-                variant="secondary"
-                onClick={() => navigate(-1)}
+                variant="danger"
+                onClick={handleDelete}
                 disabled={isSubmitting}
               >
-                Cancel
+                Delete Post
               </Button>
-              <Button
-                type="submit"
-                loading={isSubmitting}
-                disabled={isSubmitting}
-              >
-                Update Post
-              </Button>
+              <div className="flex space-x-3">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => navigate(-1)}
+                  disabled={isSubmitting}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  loading={isSubmitting}
+                  disabled={isSubmitting}
+                >
+                  Update Post
+                </Button>
+              </div>
             </div>
           </form>
         </div>
