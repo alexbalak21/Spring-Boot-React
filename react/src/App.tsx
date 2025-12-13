@@ -8,6 +8,7 @@ import User from "./pages/User";
 import Navbar from "./components/Navbar";
 import CreatePost from "./pages/Posts/CreatePost";
 import Posts from "./pages/Posts/Posts";
+import UpdatePost from "./pages/Posts/UpdatePost";
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
             <Route path="/user" element={<User />} />
             <Route path="/create-post" element={<CreatePost />} />
             <Route path="/posts" element={<Posts />} />
+            <Route path="/edit-post/:id" element={<UpdatePost />} />
           </Routes>
         </main>
       </div>
