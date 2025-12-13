@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useCsrf } from "../hooks/useCsrf";
 import { useAuthToken } from "../hooks/useAuthToken";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import Input from "../components/Input";
 
@@ -16,6 +16,7 @@ interface LoginFormData {
 export default function Login() {
   useCsrf();
   const { setAccessToken } = useAuthToken();
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
@@ -56,6 +57,9 @@ export default function Login() {
         setAccessToken(access_token);
         setLoginResult("Login successful");
         console.log("JWT saved via hook:", access_token);
+        // Navigate to home and refresh
+        navigate("/");
+        window.location.reload();
       } else {
         setError("No access token returned from server");
       }
