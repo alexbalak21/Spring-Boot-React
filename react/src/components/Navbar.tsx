@@ -1,162 +1,151 @@
-import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import Button from "./Button";
+import {
+  Disclosure,
+  DisclosureButton,
+  DisclosurePanel,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuItems,
+} from '@headlessui/react'
+import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { useState } from 'react'
+
+interface NavItem {
+  name: string
+  href: string
+}
+
+const navigation: NavItem[] = [
+  { name: 'Dashboard', href: '#' },
+  { name: 'Team', href: '#' },
+  { name: 'Projects', href: '#' },
+  { name: 'Calendar', href: '#' },
+]
+
+function classNames(...classes: Array<string | false | null | undefined>): string {
+  return classes.filter(Boolean).join(' ')
+}
 
 export default function Navbar() {
-  const { authenticated, clearAccessToken } = useAuth();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const location = useLocation();
-
-  const isActive = (path: string) => location.pathname === path;
-
-  const handleLogout = () => {
-    if (confirm("Log out now?")) {
-      clearAccessToken();
-      window.location.href = "/login";
-    }
-  };
+  const [active, setActive] = useState('Dashboard')
 
   return (
-    <nav className="bg-white shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          <div className="flex items-center">
-            <div className="flex-shrink-0 flex items-center">
-              <span className="text-xl font-bold text-indigo-600">My App</span>
-            </div>
-  <div className="hidden sm:ml-6 sm:flex sm:space-x-8 h-full">
-  <Link
-    to="/"
-    className={`flex items-center px-1 text-sm font-medium border-b-2 h-full ${
-      isActive("/")
-        ? "border-indigo-500 text-gray-900"
-        : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-    }`}
-  >
-    Home
-  </Link>
-  <Link
-    to="/about"
-    className={`flex items-center px-1 text-sm font-medium border-b-2 h-full ${
-      isActive("/about")
-        ? "border-indigo-500 text-gray-900"
-        : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-    }`}
-  >
-    About
-  </Link>
-  <Link
-    to="/demo"
-    className={`flex items-center px-1 text-sm font-medium border-b-2 h-full ${
-      isActive("/demo")
-        ? "border-indigo-500 text-gray-900"
-        : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-    }`}
-  >
-    API Demo
-  </Link>
-</div>
-          </div>
-
+    <Disclosure
+      as="nav"
+      aria-label="Main navigation"
+      className="bg-white border-b border-gray-200 relative after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-gray-200"
+    >
+      <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+        <div className="relative flex h-16 items-center justify-between">
           {/* Mobile menu button */}
-          <div className="flex sm:hidden items-center">
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:bg-gray-100"
-            >
-              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
+          <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
+            <DisclosureButton className="group relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-50 hover:text-black focus:outline-2 focus:-outline-offset-1 focus:outline-indigo-500">
+              <span className="sr-only">Open main menu</span>
+              <Bars3Icon aria-hidden="true" className="block size-6 group-data-open:hidden" />
+              <XMarkIcon aria-hidden="true" className="hidden size-6 group-data-open:block" />
+            </DisclosureButton>
           </div>
 
-          <div className="hidden sm:ml-6 sm:flex sm:items-center space-x-4">
-            {authenticated ? (
-              <>
-                <Link to="/user" className="text-gray-700 px-3 py-2 rounded-md text-sm font-medium">
-                  User
-                </Link>
-                <Button variant="danger" onClick={handleLogout} className="text-xs py-1 px-3">
-                  Logout
-                </Button>
-              </>
-            ) : (
-              <>
-                <Link
-                  to="/login"
-                  className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"
-                >
-                  Login
-                </Link>
-                <Link
-                  to="/register"
-                  className="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700"
-                >
-                  Sign up
-                </Link>
-              </>
-            )}
+          {/* Logo + Desktop nav */}
+          <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
+            <div className="flex shrink-0 items-center">
+              <img
+                alt="Company logo"
+                src="/react.svg"
+                className="h-8 w-auto"
+              />
+            </div>
+            <div className="hidden sm:ml-6 sm:block">
+           <div className="flex space-x-4 h-16">
+  {navigation.map((item) => (
+    <a
+      key={item.name}
+      href={item.href}
+      onClick={() => setActive(item.name)}
+      aria-current={active === item.name ? "page" : undefined}
+      className={classNames(
+        active === item.name
+          ? "text-indigo-600 font-semibold border-b-3 border-indigo-600"
+          : "text-gray-600 hover:text-gray-900 hover:border-gray-300 border-transparent",
+        "flex items-center h-full px-3 text-sm font-medium border-b-2 transition-colors"
+      )}
+    >
+      {item.name}
+    </a>
+  ))}
+</div>
+
+            </div>
+          </div>
+
+          {/* Right side buttons */}
+          <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+            <button
+              type="button"
+              aria-label="View notifications"
+              className="relative rounded-full p-1 text-gray-400 hover:text-white focus:outline-2 focus:outline-offset-2 focus:outline-indigo-500"
+            >
+              <BellIcon aria-hidden="true" className="size-6" />
+            </button>
+
+            {/* Profile dropdown */}
+            <Menu as="div" className="relative ml-3">
+              <MenuButton className="relative flex rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
+                <span className="sr-only">Open user menu</span>
+                <img
+                  alt="User avatar"
+                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?..."
+                  className="size-8 rounded-full bg-gray-100 outline -outline-offset-1 outline-white/10"
+                />
+              </MenuButton>
+
+<MenuItems
+  transition
+  className="absolute right-0 z-10 mt-5 w-48 origin-top-right rounded-md bg-white py-1 outline outline-gray-200 
+             transition 
+             data-closed:scale-95 data-closed:transform data-closed:opacity-0 
+             data-open:opacity-100 data-open:scale-100 
+             data-enter:duration-100 data-enter:ease-out 
+             data-leave:duration-75 data-leave:ease-in"
+>
+  {["Your profile", "Settings", "Sign out"].map((label) => (
+    <MenuItem key={label}>
+      <a
+        href="#"
+        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 data-focus:bg-gray-100 data-focus:text-gray-900"
+      >
+        {label}
+      </a>
+    </MenuItem>
+  ))}
+</MenuItems>
+            </Menu>
           </div>
         </div>
-
-        {/* Mobile menu */}
-        {mobileMenuOpen && (
-          <div className="sm:hidden pb-4 space-y-2">
-            <Link
-              to="/"
-              className="block text-gray-700 px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100"
-            >
-              Home
-            </Link>
-            <Link
-              to="/about"
-              className="block text-gray-700 px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100"
-            >
-              About
-            </Link>
-            <Link
-              to="/demo"
-              className="block text-gray-700 px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100"
-            >
-              API Demo
-            </Link>
-            <div className="border-t pt-2 mt-2">
-              {authenticated ? (
-                <>
-                  <Link
-                    to="/user"
-                    className="block text-gray-700 px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100"
-                  >
-                    User
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="w-full text-left text-red-600 px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100"
-                  >
-                    Logout
-                  </button>
-                </>
-              ) : (
-                <>
-                  <Link
-                    to="/login"
-                    className="block text-gray-700 px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100"
-                  >
-                    Login
-                  </Link>
-                  <Link
-                    to="/register"
-                    className="block text-indigo-600 px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100"
-                  >
-                    Sign up
-                  </Link>
-                </>
-              )}
-            </div>
-          </div>
-        )}
       </div>
-    </nav>
-  );
+
+    {/* Mobile nav */}
+<DisclosurePanel className="sm:hidden">
+  <div className="space-y-1 pt-2 pb-3">
+    {navigation.map((item) => (
+      <DisclosureButton
+        key={item.name}
+        as="a"
+        href={item.href}
+        onClick={() => setActive(item.name)}
+        aria-current={active === item.name ? "page" : undefined}
+        className={classNames(
+          active === item.name
+            ? "text-indigo-600 font-semibold bg-gray-50 border-l-3 border-indigo-600"
+            : "text-gray-700 hover:text-indigo-600 hover:border-l-3 hover:border-indigo-600",
+          "block px-3 py-2 text-base font-medium transition-colors w-full"
+        )}
+      >
+        {item.name}
+      </DisclosureButton>
+    ))}
+  </div>
+</DisclosurePanel>
+    </Disclosure>
+  )
 }
