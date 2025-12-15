@@ -4,12 +4,15 @@ import About from "./pages/About";
 import Login from "./pages/Login";
 import ApiDemo from "./pages/ApiDemo";
 import Register from "./pages/Register";
-import User from "./pages/User";
 import Navbar from "./components/Navbar";
+import ToastContainer from "./components/ToastContainer";
+import UpdateUser from "./pages/User/UpdateUser";
+import UpdateUserPassword from "./pages/User/UpdateUserPassword";
+import Profile from "./pages/User/Profile";
 
 export default function App() {
   return (
-    <Router>
+        <Router>
       <div className="min-h-screen bg-gray-50">
         <Navbar />
 
@@ -20,9 +23,13 @@ export default function App() {
             <Route path="/demo" element={<ApiDemo />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/user" element={<User />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/update-profile" element={<UpdateUser />} />
+            <Route path="/update-password" element={<UpdateUserPassword />} />
           </Routes>
         </main>
+
+        <ToastContainer position="top-right" />
       </div>
     </Router>
   );}

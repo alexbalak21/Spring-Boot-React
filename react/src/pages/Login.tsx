@@ -2,7 +2,8 @@ import { useState } from "react";
 import axios from "axios";
 import { useCsrf } from "../hooks/useCsrf";
 import { useAuthToken } from "../hooks/useAuthToken";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useToast } from "../components/ToastContainer";
 import Button from "../components/Button";
 import Input from "../components/Input";
 
@@ -16,13 +17,14 @@ interface LoginFormData {
 export default function Login() {
   useCsrf();
   const { setAccessToken } = useAuthToken();
+  const navigate = useNavigate();
+  const toast = useToast();
 
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
     password: "",
   });
   const [error, setError] = useState<string | null>(null);
-  const [loginResult, setLoginResult] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,7 +35,6 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    setLoginResult(null);
 
     if (!formData.email.trim() || !formData.password) {
       setError("Please enter both email and password");
@@ -54,8 +55,10 @@ export default function Login() {
       const access_token = response.data?.access_token;
       if (access_token) {
         setAccessToken(access_token);
-        setLoginResult("Login successful");
+        toast.success("Login successful!");
         console.log("JWT saved via hook:", access_token);
+        // Navigate to home and refresh
+        navigate("/");
       } else {
         setError("No access token returned from server");
       }
@@ -113,30 +116,6 @@ export default function Login() {
             </div>
           )}
 
-          {loginResult && (
-            <div className="mb-4 bg-green-50 border-l-4 border-green-400 p-4">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <svg
-                    className="h-5 w-5 text-green-400"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm text-green-700">{loginResult}</p>
-                </div>
-              </div>
-            </div>
-          )}
-
           <form className="space-y-6" onSubmit={handleSubmit}>
             <Input
               id="email"
@@ -147,7 +126,7 @@ export default function Login() {
               value={formData.email}
               onChange={handleChange}
               disabled={isLoading}
-              placeholder="you@example.com"
+              placeholder="your@mail.com"
             />
 
             <Input
