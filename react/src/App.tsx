@@ -6,30 +6,37 @@ import ApiDemo from "./pages/ApiDemo";
 import Register from "./pages/Register";
 import Navbar from "./components/Navbar";
 import ToastContainer from "./components/ToastContainer";
+import UserLayout from "./layouts/UserLayout";
+import Profile from "./pages/User/Profile";
 import UpdateUser from "./pages/User/UpdateUser";
 import UpdateUserPassword from "./pages/User/UpdateUserPassword";
-import Profile from "./pages/User/Profile";
 
 export default function App() {
   return (
-        <Router>
-      <div className="min-h-screen bg-gray-50">
+    <Router>
+      <div className="min-h-screen bg-gray-50 flex flex-col">
         <Navbar />
 
-        <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div className="flex flex-1">
           <Routes>
+            {/* Normal pages without sidebar */}
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/demo" element={<ApiDemo />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/update-profile" element={<UpdateUser />} />
-            <Route path="/update-password" element={<UpdateUserPassword />} />
+
+            {/* User-related pages with sidebar */}
+            <Route element={<UserLayout />}>
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/update-profile" element={<UpdateUser />} />
+              <Route path="/update-password" element={<UpdateUserPassword />} />
+            </Route>
           </Routes>
-        </main>
+        </div>
 
         <ToastContainer position="top-right" />
       </div>
     </Router>
-  );}
+  );
+}
