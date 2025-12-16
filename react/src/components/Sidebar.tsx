@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { ChevronLeftIcon, ChevronRightIcon, ArrowLeftEndOnRectangleIcon, ArrowRightEndOnRectangleIcon  } from "@heroicons/react/24/outline";
+import {ArrowLeftEndOnRectangleIcon, ArrowRightEndOnRectangleIcon} from "@heroicons/react/24/outline";
 
 function classNames(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
