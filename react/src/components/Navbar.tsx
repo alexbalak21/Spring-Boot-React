@@ -5,7 +5,6 @@ import {
 } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon, HomeIcon, InformationCircleIcon, CodeBracketIcon } from "@heroicons/react/24/outline";
 import { Link, useLocation } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
 import { useUser } from "../context/UserContext";
 import UserMenu from "./UserMenu";
 
@@ -14,7 +13,6 @@ function classNames(...classes: Array<string | false | null | undefined>): strin
 }
 
 export default function Navbar() {
-  const { authenticated } = useAuth();
   const { user } = useUser();
   const location = useLocation();
 

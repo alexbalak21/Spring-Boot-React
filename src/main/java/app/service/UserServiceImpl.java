@@ -29,10 +29,14 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + userId));
 
-        // Update user fields
-        user.setName(updateRequest.getName());
-        user.setEmail(updateRequest.getEmail());
-        
+        // Update only non-null fields
+        if (updateRequest.getName() != null) {
+            user.setName(updateRequest.getName());
+        }
+        if (updateRequest.getEmail() != null) {
+            user.setEmail(updateRequest.getEmail());
+        }
+
         return userRepository.save(user);
     }
 
@@ -42,13 +46,13 @@ public class UserServiceImpl implements UserService {
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new IllegalStateException("No authenticated user");
         }
-        
+
         Object principal = authentication.getPrincipal();
         if (!(principal instanceof CustomUserDetails)) {
-            throw new IllegalStateException("Unexpected principal type: " + 
-                (principal != null ? principal.getClass().getName() : "null"));
+            throw new IllegalStateException("Unexpected principal type: " +
+                    (principal != null ? principal.getClass().getName() : "null"));
         }
-        
+
         return (CustomUserDetails) principal;
     }
 
@@ -68,3 +72,4 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 }
+    

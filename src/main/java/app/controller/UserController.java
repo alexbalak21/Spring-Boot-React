@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/user")
 public class UserController {
 
     private final UserService userService;
@@ -34,7 +34,7 @@ public class UserController {
 
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/user")
+    @GetMapping
     public ResponseEntity<UserInfoProfileImage> currentUser(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.status(403).build();
@@ -56,8 +56,24 @@ public class UserController {
 
     // Update profile (name, email, etc.)
     @PreAuthorize("isAuthenticated()")
-    @PutMapping("/user/profile")
+    @PutMapping("/profile")
     public ResponseEntity<UserInfo> updateProfile(@Valid @RequestBody UpdateUserRequest updateRequest) {
+        try {
+            CustomUserDetails currentUser = userService.getCurrentUser();
+            User updatedUser = userService.updateUser(currentUser.getId(), updateRequest);
+            return ResponseEntity.ok(new UserInfo(updatedUser));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(null);
+        }
+    }
+
+    
+    // Partial update profile (PATCH)
+    @PreAuthorize("isAuthenticated()")
+    @PatchMapping("/profile")
+    public ResponseEntity<UserInfo> patchProfile(@RequestBody UpdateUserRequest updateRequest) {
         try {
             CustomUserDetails currentUser = userService.getCurrentUser();
             User updatedUser = userService.updateUser(currentUser.getId(), updateRequest);
@@ -71,7 +87,7 @@ public class UserController {
 
     // Update password (requires current password check)
     @PreAuthorize("isAuthenticated()")
-    @PutMapping("/user/password")
+    @PutMapping("/password")
     public ResponseEntity<?> updatePassword(@Valid @RequestBody UpdatePasswordRequest passwordRequest) {
         try {
             CustomUserDetails currentUser = userService.getCurrentUser();
@@ -85,7 +101,7 @@ public class UserController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("/user/profile-image")
+    @PostMapping("/profile-image")
     public ResponseEntity<?> uploadProfileImage(@RequestParam("file") MultipartFile file) {
         try {
             if (file.isEmpty() || !file.getContentType().startsWith("image/")) {

@@ -1,16 +1,23 @@
 import { useNavigate } from "react-router-dom";
 import Button from "../../components/Button";
 import { useUser } from "../../context/UserContext";
-import Avatar from "../../components/Avatar"; // <-- import Avatar
+import Avatar from "../../components/Avatar";
+import EditableField from "../../components/EditableField";
 
 export default function Profile() {
-  const { user } = useUser();
+  const { user, setUser } = useUser();
   const navigate = useNavigate();
+
+  const handleSaveName = (newName: string) => {
+    if (user) {
+      setUser({ ...user, name: newName }); // update locally
+      // TODO: call backend API to persist change
+    }
+  };
 
   return (
     <div className="w-full max-w-lg bg-white rounded-lg shadow-md p-8">
-
-        <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-semibold">User Profile</h2>
         <div className="flex space-x-2">
           <Button
@@ -21,33 +28,36 @@ export default function Profile() {
           </Button>
         </div>
       </div>
+
       {/* Avatar at top center */}
       <div className="flex justify-center mb-6">
         {user && (
           <Avatar
             name={user.name}
             imageUrl={
-              user.profileImage
+              user?.profileImage
                 ? `data:image/png;base64,${user.profileImage}`
                 : undefined
             }
-            size={64} // <-- bigger size
+            size={64}
             bgColor="bg-gray-400"
             textColor="text-white"
           />
         )}
       </div>
 
-
-
       {!user && <p className="text-gray-600">Loading user info...</p>}
 
       {user && (
         <div className="space-y-3">
-          <div className="flex gap-4">
-            <strong className="w-28 text-gray-700">Name:</strong>
-            <span className="text-gray-900">{user.name}</span>
-          </div>
+          {/* Editable Name */}
+          <EditableField
+            label="Name"
+            value={user.name}
+            onSave={handleSaveName}
+          />
+
+          {/* Other fields */}
           <div className="flex gap-4">
             <strong className="w-28 text-gray-700">Email:</strong>
             <span className="text-gray-900">{user.email}</span>

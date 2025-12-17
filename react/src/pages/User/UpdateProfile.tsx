@@ -4,7 +4,7 @@ import { useAuthorizedApi } from "../../hooks/useAuthorizedApi";
 import Button from "../../components/Button";
 import Input from "../../components/Input";
 import { useUser } from "../../context/UserContext";
-import UploadProfileImage from "../../components/UploadProfileImage"; // 👈 import the image upload component
+import UploadProfileImage from "../../components/UploadProfileImage";
 
 export default function UpdateProfile() {
   const navigate = useNavigate();
