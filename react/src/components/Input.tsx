@@ -20,7 +20,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           </label>
         )}
         <input ref={ref} className={finalClasses} {...props} />
-        {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
+        {error && <p className="mt-1 text-sm text-red-600 ms-3">{error}</p>}
         {helperText && !error && <p className="mt-1 text-sm text-gray-500">{helperText}</p>}
       </div>
     );

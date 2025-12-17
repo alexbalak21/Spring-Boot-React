@@ -3,15 +3,43 @@ import Button from "../../components/Button";
 import { useUser } from "../../context/UserContext";
 import Avatar from "../../components/Avatar";
 import EditableField from "../../components/EditableField";
+import { useAuthorizedApi } from "../../hooks/useAuthorizedApi";
+
+interface UserDto {
+  name?: string;
+  email?: string;
+}
 
 export default function Profile() {
+  const api = useAuthorizedApi();
   const { user, setUser } = useUser();
   const navigate = useNavigate();
 
-  const handleSaveName = (newName: string) => {
+  // Make updateUser return the updated user from backend
+  const updateUser = async (payload: UserDto) => {
+    try {
+      const response = await api.patch("/user/profile", payload);
+      return response.data; // updated user object
+    } catch (err: any) {
+      // Extract backend error message if available
+      const message =
+        err?.response?.data?.message || "Failed to update user";
+      throw new Error(message);
+    }
+  };
+
+
+  const handleSaveName = async (newName: string) => {
     if (user) {
-      setUser({ ...user, name: newName }); // update locally
-      // TODO: call backend API to persist change
+      const updatedUser = await updateUser({ name: newName });
+      setUser(updatedUser);
+    }
+  };
+
+  const handleSaveEmail = async (newEmail: string) => {
+    if (user) {
+      const updatedUser = await updateUser({ email: newEmail });
+      setUser(updatedUser);
     }
   };
 
@@ -57,11 +85,14 @@ export default function Profile() {
             onSave={handleSaveName}
           />
 
+          {/* Editable Email */}
+          <EditableField
+            label="Email"
+            value={user.email}
+            onSave={handleSaveEmail}
+          />
+
           {/* Other fields */}
-          <div className="flex gap-4">
-            <strong className="w-28 text-gray-700">Email:</strong>
-            <span className="text-gray-900">{user.email}</span>
-          </div>
           <div className="flex gap-4">
             <strong className="w-28 text-gray-700">Role:</strong>
             <span className="text-gray-900">{user.roles.join(", ")}</span>
