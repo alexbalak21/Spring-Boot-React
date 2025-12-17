@@ -2,6 +2,7 @@ package app.dto;
 
 import app.security.CustomUserDetails;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -11,7 +12,7 @@ public class UserInfo {
     private Long id;
     private String name;
     private String email;
-    private String role;
+    private List<String> roles;
     private String createdAt;
     private String updatedAt;
 
@@ -20,7 +21,9 @@ public class UserInfo {
         this.id = user.getId();
         this.name = user.getName();
         this.email = user.getUsername();
-        this.role = user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(","));
+        this.roles = user.getAuthorities().stream()
+                         .map(GrantedAuthority::getAuthority)
+                         .collect(Collectors.toList());
         this.createdAt = user.getCreatedAt() != null ? user.getCreatedAt().toString() : null;
         this.updatedAt = user.getUpdatedAt() != null ? user.getUpdatedAt().toString() : null;
     }
@@ -30,7 +33,9 @@ public class UserInfo {
         this.id = null; // Spring’s User doesn’t carry an id
         this.name = null; // no name field
         this.email = springUser.getUsername();
-        this.role = springUser.getAuthorities().toString();
+        this.roles = springUser.getAuthorities().stream()
+                               .map(GrantedAuthority::getAuthority)
+                               .collect(Collectors.toList());
         this.createdAt = null;
         this.updatedAt = null;
     }
@@ -40,7 +45,7 @@ public class UserInfo {
         this.id = user.getId();
         this.name = user.getName();
         this.email = user.getEmail();
-        this.role = user.getRole() != null ? user.getRole().name() : null;
+        this.roles = user.getRole() != null ? List.of(user.getRole().name()) : List.of();
         this.createdAt = user.getCreatedAt() != null ? user.getCreatedAt().toString() : null;
         this.updatedAt = user.getUpdatedAt() != null ? user.getUpdatedAt().toString() : null;
     }
@@ -49,7 +54,7 @@ public class UserInfo {
     public Long getId() { return id; }
     public String getName() { return name; }
     public String getEmail() { return email; }
-    public String getRole() { return role; }
+    public List<String> getRoles() { return roles; }
     public String getCreatedAt() { return createdAt; }
     public String getUpdatedAt() { return updatedAt; }
 }

@@ -13,8 +13,6 @@ import io.jsonwebtoken.io.IOException;
 import app.service.UserProfileImageService;
 import jakarta.validation.Valid;
 
-import java.util.Map;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -33,6 +31,7 @@ public class UserController {
         this.userService = userService;
         this.userProfileImageService = userProfileImageService;
     }
+
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/user")

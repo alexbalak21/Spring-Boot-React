@@ -6,9 +6,10 @@ interface UserInfo {
   id: number;
   name: string;
   email: string;
-  role: string;
+  roles: string[];
   createdAt: string;
   updatedAt: string;
+  profileImage: string;
 }
 
 interface UserContextType {
