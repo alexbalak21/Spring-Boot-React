@@ -1,4 +1,12 @@
-import React, { createContext, useContext, useEffect, useMemo, useState, useCallback, useRef } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  useCallback,
+  useRef
+} from "react";
 
 type AuthContextType = {
   accessToken: string | null;
@@ -12,22 +20,26 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  console.log("%c[AuthProvider] RENDER", "color: purple");
+
   const [accessToken, setAccessTokenState] = useState<string | null>(() => {
     try {
-      return localStorage.getItem("access_token");
+      const stored = localStorage.getItem("access_token");
+      console.log("%c[INIT] Loaded access token:", "color: purple", stored);
+      return stored;
     } catch {
       return null;
     }
   });
 
-  // Track refresh state and promise at module level to prevent multiple refreshes
   const isRefreshing = useRef(false);
-  const refreshPromise = useRef<Promise<string | null> | null>(null);
   const refreshSubscribers = useRef<Array<(token: string | null) => void>>([]);
 
   useEffect(() => {
+    console.log("%c[AuthProvider] useEffect(storage listener)", "color: purple");
     const onStorage = (e: StorageEvent) => {
       if (e.key === "access_token") {
+        console.log("%c[STORAGE] access_token changed:", "color: purple", e.newValue);
         setAccessTokenState(e.newValue);
       }
     };
@@ -36,150 +48,145 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const setAccessToken = (token: string | null) => {
+    console.log("%c[SET TOKEN] New token:", "color: green", token);
     try {
-      if (token) {
-        localStorage.setItem("access_token", token);
-      } else {
-        localStorage.removeItem("access_token");
-      }
-    } catch { }
+      if (token) localStorage.setItem("access_token", token);
+      else localStorage.removeItem("access_token");
+    } catch {}
     setAccessTokenState(token);
   };
 
   const clearAccessToken = useCallback(() => {
-    // Clear the access token from memory and localStorage
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem("access_token");
-    }
+    console.log("%c[CLEAR TOKEN]", "color: red");
+    localStorage.removeItem("access_token");
     setAccessTokenState(null);
   }, []);
 
+  // -----------------------------
+  // REFRESH TOKEN
+  // -----------------------------
   const refreshAccessToken = useCallback(async (): Promise<string | null> => {
-    // If we already have a refresh in progress, return the existing promise
+    console.log("%c[REFRESH] Called refreshAccessToken()", "color: orange");
+
     if (isRefreshing.current) {
-      return new Promise((resolve) => {
-        const unsubscribe = (token: string | null) => {
-          const index = refreshSubscribers.current.indexOf(unsubscribe);
-          if (index > -1) {
-            refreshSubscribers.current.splice(index, 1);
-          }
+      console.log("%c[REFRESH] Already refreshing → queue subscriber", "color: orange");
+      return new Promise(resolve => {
+        refreshSubscribers.current.push(token => {
+          console.log("%c[REFRESH] Subscriber resolved:", "color: orange", token);
           resolve(token);
-        };
-        refreshSubscribers.current.push(unsubscribe);
+        });
       });
     }
 
     isRefreshing.current = true;
+    console.log("%c[REFRESH] Starting refresh request...", "color: orange");
 
     try {
-      console.log('[Auth] Refreshing access token...');
-      const response = await fetch('/api/auth/refresh', {
-        method: 'POST',
-        credentials: 'include', // Important for sending refresh token cookie
+      const response = await fetch("/api/auth/refresh", {
+        method: "POST",
+        credentials: "include",
         headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        }
       });
+
+      console.log("%c[REFRESH] Response status:", "color: orange", response.status);
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('[Auth] Token refresh failed:', response.status, errorText);
-        throw new Error(`Failed to refresh token: ${response.status} ${errorText}`);
+        console.error("[REFRESH] FAILED:", response.status, errorText);
+        throw new Error("Refresh failed");
       }
 
-      const data = await response.json().catch(() => ({}));
-      const newAccessToken = data.access_token || data.accessToken;
+      const data = await response.json();
+      console.log("%c[REFRESH] Response JSON:", "color: orange", data);
 
-      if (!newAccessToken) {
-        console.error('[Auth] No access token in refresh response:', data);
-        throw new Error('No access token in response');
-      }
+      const newToken = data.access_token;
+      console.log("%c[REFRESH] New access token:", "color: orange", newToken);
 
-      console.log('[Auth] Successfully refreshed access token');
-      // Update the token in state and storage
-      setAccessToken(newAccessToken);
+      setAccessToken(newToken);
 
-      // Notify all waiting subscribers
-      refreshSubscribers.current.forEach(cb => cb(newAccessToken));
+      refreshSubscribers.current.forEach(cb => cb(newToken));
       refreshSubscribers.current = [];
 
-      return newAccessToken;
-    } catch (error) {
-      console.error('Error refreshing token:', error);
-      // Notify all waiting subscribers of the error
+      return newToken;
+    } catch (err) {
+      console.error("%c[REFRESH] ERROR:", "color: red", err);
       refreshSubscribers.current.forEach(cb => cb(null));
       refreshSubscribers.current = [];
       clearAccessToken();
       return null;
     } finally {
+      console.log("%c[REFRESH] Finished", "color: orange");
       isRefreshing.current = false;
     }
-  }, [isRefreshing, clearAccessToken]);
+  }, [clearAccessToken]);
 
-  // Create an API client that automatically handles token refresh
+  // -----------------------------
+  // API CLIENT
+  // -----------------------------
   const apiClient = useCallback(
     async (input: RequestInfo | URL, init: RequestInit = {}): Promise<Response> => {
-      // Convert URL object to string if needed
-      const url = input instanceof URL ? input.toString() : input.toString();
-      const isPublicEndpoint = ['/api/auth/refresh', '/api/csrf'].some(path =>
-        url.includes(path)
-      );
+      const url = input.toString();
+      console.log("%c[API] Request started:", "color: cyan", url);
 
-      // Create a clean headers object
-      const headers = new Headers(init?.headers);
+      const isPublic = ["/api/auth/refresh", "/api/csrf"].some(p => url.includes(p));
+      console.log("%c[API] Is public endpoint:", "color: cyan", isPublic);
 
-      // Helper function to make the actual request
-      const makeRequest = async (token: string | null) => {
-        // Create a new headers object for each request to avoid header pollution
-        const requestHeaders = new Headers(init?.headers); // Start with original headers
+      const makeRequest = async (token: string | null, label: string) => {
+        console.log(`%c[API] makeRequest(${label}) token:`, "color: cyan", token);
 
-        // Set the authorization header if we have a token and it's not a public endpoint
-        if (token && !isPublicEndpoint) {
-          requestHeaders.set('Authorization', `Bearer ${token}`);
+        const headers = new Headers(init.headers);
+        if (token && !isPublic) {
+          headers.set("Authorization", `Bearer ${token}`);
         }
 
-        // Ensure we include credentials for all requests
-        const options: RequestInit = {
+        const res = await fetch(url, {
           ...init,
-          headers: requestHeaders,
-          credentials: 'include' as const,
-        };
+          headers,
+          credentials: "include"
+        });
 
-        return fetch(url, options);
+        console.log(`%c[API] Response (${label}) status:`, "color: cyan", res.status);
+        console.log(
+          `%c[API] Response (${label}) X-Token-Expired:`,
+          "color: cyan",
+          res.headers.get("X-Token-Expired")
+        );
+
+        return res;
       };
 
-      // Make the initial request
-      let response = await makeRequest(accessToken);
+      // FIRST ATTEMPT
+      const first = await makeRequest(accessToken, "FIRST");
 
-      // Handle token expiration (401 with X-Token-Expired header)
-      // Only attempt refresh for non-public endpoints and if we have a token
-      if (!isPublicEndpoint && accessToken && response.status === 401 && response.headers.get('X-Token-Expired') === 'true') {
-        console.log('[Auth] Access token expired, attempting refresh...');
+      const expired = first.headers.get("X-Token-Expired") === "true";
+      console.log("%c[API] Token expired?", "color: cyan", expired);
 
-        try {
-          // Get a new token using the refresh token
-          const newToken = await refreshAccessToken();
-
-          if (newToken) {
-            console.log('[Auth] Retrying original request with new token');
-            // Create a new request with the new token
-            return makeRequest(newToken);
-          } else {
-            console.error('[Auth] Failed to refresh access token');
-            clearAccessToken();
-            return response; // Return the original 401 response
-          }
-        } catch (error) {
-          console.error('[Auth] Error during token refresh:', error);
-          clearAccessToken();
-          return response; // Return the original 401 response
-        }
+      if (!expired) {
+        console.log("%c[API] Returning FIRST response", "color: cyan");
+        return first;
       }
 
-      return response;
+      // REFRESH
+      console.log("%c[API] Token expired → refreshing...", "color: yellow");
+      const newToken = await refreshAccessToken();
+      console.log("%c[API] New token after refresh:", "color: yellow", newToken);
+
+      if (!newToken) {
+        console.log("%c[API] Refresh failed → throwing", "color: red");
+        throw new Error("Unable to refresh token");
+      }
+
+      // RETRY ONCE
+      console.log("%c[API] Retrying with new token...", "color: yellow");
+      const second = await makeRequest(newToken, "SECOND");
+
+      console.log("%c[API] Returning SECOND response", "color: yellow");
+      return second;
     },
-    [accessToken, refreshAccessToken, clearAccessToken]
+    [accessToken, refreshAccessToken]
   );
 
   const value = useMemo(
