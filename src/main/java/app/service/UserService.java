@@ -9,4 +9,5 @@ public interface UserService {
     User updateUser(Long userId, UpdateUserRequest updateRequest);
     CustomUserDetails getCurrentUser();
     void updatePassword(Long userId, UpdatePasswordRequest passwordRequest);
+    void deleteUser(Long userId);
 }
