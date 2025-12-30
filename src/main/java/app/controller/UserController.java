@@ -96,7 +96,20 @@ public class UserController {
         }
     }
 
-    //Updates the User profileImage 
+    //DELETE User 
+    @DeleteMapping
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> deleteUserAccount() {
+        try {
+            CustomUserDetails currentUser = userService.getCurrentUser();
+            userService.deleteUser(currentUser.getId());
+            return ResponseEntity.ok("User account deleted successfully");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Failed to delete user account");
+        }
+    }
+
+    // Updates the User profileImage
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/profile-image")
     public ResponseEntity<?> uploadProfileImage(@RequestParam("file") MultipartFile file) {
@@ -135,17 +148,4 @@ public class UserController {
             return ResponseEntity.internalServerError().body("Failed to delete profile image");
         }
     }
-
-    @DeleteMapping
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> deleteUserAccount() {
-        try {
-            CustomUserDetails currentUser = userService.getCurrentUser();
-            userService.deleteUser(currentUser.getId());
-            return ResponseEntity.ok("User account deleted successfully");
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Failed to delete user account");
-        }
-    }
-
 }
