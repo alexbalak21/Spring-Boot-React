@@ -9,7 +9,7 @@ import app.dto.MessageRequest;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-//REST CONTROLLER
+//TEST API CONTROLLER GET & POST
 @RestController
 @RequestMapping("/api")
 public class ApiController {
