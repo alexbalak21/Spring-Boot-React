@@ -1,4 +1,4 @@
-# Spring Boot + React Fullstack Project
+# Spring Boot + React - Fullstack Auth Template
 
 This project is a fullstack web application combining a Spring Boot backend and a React frontend. It demonstrates modern authentication, user management, API integration, and secure file uploads.
 
